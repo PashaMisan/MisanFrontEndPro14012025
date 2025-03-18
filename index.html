@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Динамічна сторінка</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<section>
+    <label for="textField"></label>
+    <div class="d-flex">
+        <input type="text" id="textField" placeholder="Наведіть фокус">
+        <div class="d-none ms-5" id="textFieldInfo">Це додаткова інформація</div>
+    </div>
+</section>
+
+<section>
+    <button id="enterLink">Ввести посилання</button>
+    <button id="goToLink" disabled>Перейти за посиланням</button>
+</section>
+
+<section>
+    <div id="table"></div>
+</section>
+
+<section>
+    <img id="randomImage" alt="Випадкове зображення" src="">
+</section>
+
+<script src="script.js"></script>
+</body>
+</html>
