@@ -54,7 +54,7 @@ function generateTable(container) {
 }
 
 function setRandomImage(imgElement) {
-    let randomIndex = Math.floor(Math.random() * 9) + 1;
+    const randomIndex = Math.floor(Math.random() * 9) + 1;
 
     imgElement.src = 'images/' + randomIndex + '.jpg';
 }
