@@ -1,0 +1,18 @@
+.d-flex {
+    display: flex;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.emoji-container {
+    font-size: 50px;
+    margin: 0 20px;
+    cursor: pointer;
+}
+
+.counter-container {
+    font-size: 18px;
+    margin-top: 10px;
+}
