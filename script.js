@@ -8,8 +8,6 @@ const emojiVotes = [
 const voteContainer = document.getElementById('vote-container');
 
 function render(emojiVotes, voteContainer) {
-    voteContainer.innerText = '';
-
     emojiVotes.forEach((item) => {
         const voteItemContainer = document.createElement('div');
         const emojiContainer = document.createElement('div');
@@ -19,7 +17,7 @@ function render(emojiVotes, voteContainer) {
         emojiContainer.innerText = item.emoji;
         emojiContainer.onclick = () => {
             item.votes++;
-            render(emojiVotes, voteContainer);
+            counterContainer.innerText = item.votes;
         }
 
         counterContainer.classList.add('counter-container');
