@@ -38,7 +38,6 @@ const store = {
         const productId = event.target.dataset.id;
 
         if (productId) {
-            this.productInfoElement.innerHTML = '';
             this.renderProductInfo(+productId);
         }
     },
@@ -68,6 +67,7 @@ const store = {
             descriptionElement.innerText = product.description;
             button.innerText = 'Купити';
 
+            this.productInfoElement.innerHTML = '';
             this.productInfoElement.appendChild(descriptionElement);
             this.productInfoElement.appendChild(button);
         }
