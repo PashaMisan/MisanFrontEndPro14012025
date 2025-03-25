@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Форма для реєстрації</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<form id="registrationForm">
+
+    <div class="form-group">
+        <label for="firstName">Ім'я:</label>
+        <input type="text" id="firstName" name="firstName" required>
+    </div>
+
+    <div class="form-group">
+        <label for="lastName">Прізвище:</label>
+        <input type="text" id="lastName" name="lastName" required>
+    </div>
+
+    <div class="form-group">
+        <label for="birthDate">Дата народження:</label>
+        <input type="date" id="birthDate" name="birthDate" required>
+    </div>
+
+    <div class="form-group">
+        <fieldset>
+            <legend>Стать</legend>
+
+            <div>
+                <input type="radio" name="gender" value="Чоловіча" id="gender1" required>
+                <label for="gender1">Чоловіча</label>
+            </div>
+
+            <div>
+                <input type="radio" name="gender" value="Чоловіча" id="gender2">
+                <label for="gender2">Жіноча</label>
+            </div>
+
+        </fieldset>
+    </div>
+
+    <div class="form-group">
+        <label for="city">Місто:</label>
+        <select id="city" name="city" required>
+            <option value="Полтава">Полтава</option>
+            <option value="Київ">Київ</option>
+            <option value="Львів">Львів</option>
+            <option value="Одеса">Одеса</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label for="address">Адреса:</label>
+        <textarea id="address" name="address" required></textarea>
+    </div>
+
+    <div class="form-group">
+        <fieldset>
+            <legend>Мови</legend>
+
+            <div class="checkbox-group">
+                <div>
+                    <input type="checkbox" id="ukrainian" name="language" value="Українська">
+                    <label for="ukrainian">Українська</label>
+                </div>
+                <div>
+                    <input type="checkbox" id="english" name="language" value="Англійська">
+                    <label for="english">Англійська</label>
+                </div>
+                <div>
+                    <input type="checkbox" id="german" name="language" value="Німецька">
+                    <label for="german">Німецька</label>
+                </div>
+            </div>
+        </fieldset>
+    </div>
+
+    <button type="submit">Зберегти</button>
+</form>
+
+<div id="resultTable" style="display:none;">
+    <table>
+        <tbody></tbody>
+    </table>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>

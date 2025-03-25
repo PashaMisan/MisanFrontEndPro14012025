@@ -1,0 +1,17 @@
+form {
+    width: 300px;
+}
+
+table {
+    border: 1px solid black;
+}
+
+td, th {
+    border: 1px solid black;
+    padding: 8px;
+    text-align: left;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
