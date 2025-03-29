@@ -14,7 +14,89 @@ const products = [
     { id: 7, categoryId: 3, name: "Основи програмування", description: "Посібник для початківців у світі програмування." }
 ];
 
+const orderList = {
+    items: [],
+    listDisplayElement: document.getElementById('order-list'),
+    addItem: function (product, formData) {
+        this.items.push({product, formData});
+        this.refreshDisplay();
+    },
+    refreshDisplay: function () {
+        this.listDisplayElement.innerHTML = '';
+
+        this.items.forEach(item => {
+            const li = document.createElement('li');
+
+            const productInfo = `${item.product.name} - ${item.product.description}`;
+            const deliveryInfo = `Місто: ${item.formData.get('city')}, Склад: ${item.formData.get('department')}`;
+
+            li.innerHTML = `${productInfo}<br>${deliveryInfo}`;
+
+            this.listDisplayElement.appendChild(li);
+        });
+    }
+}
+
+const checkout = {
+    submitListeners: [],
+    requiredFields: ["full-name", "city", "department", "payment", "quantity"],
+    form: document.getElementById('checkout-form'),
+    init: function () {
+        this.form.addEventListener('submit', event => this.handleSubmit(event));
+
+        return this;
+    },
+    handleSubmit: function (event) {
+        event.preventDefault();
+
+        const formData = new FormData(event.target);
+        const productId = +event.target.dataset.productId;
+
+        if(this.formValidation(formData)) {
+            this.submitListeners.forEach(callback => callback(productId, formData));
+        }
+    },
+    formValidation: function (formData) {
+        let isValid = true;
+
+        this.requiredFields.forEach(key => {
+            const fieldStyle = this.form.querySelector(`#${key}`).style;
+
+            if (formData.has(key) && formData.get(key)) {
+                fieldStyle.borderColor = '';
+            } else {
+                fieldStyle.borderColor = 'red';
+                isValid = false;
+            }
+        });
+
+        if (!isValid) {
+            this.showValidationMessage("Заповніть обов'язкові поля");
+        }
+
+        return isValid;
+    },
+    showForm: function (productId) {
+        this.form.dataset.productId = productId;
+        this.form.style.display = 'block';
+    },
+    hideForm: function () {
+        this.form.style.display = 'none';
+    },
+    showValidationMessage: function (message) {
+        const textElement = this.form.querySelector('#validation-text');
+
+        textElement.style.display = 'block';
+        textElement.innerText = message;
+    },
+    addSubmitListener: function (callback) {
+        this.submitListeners.push(callback);
+    }
+}
+
 const store = {
+    checkout: checkout,
+    orderList: orderList,
     categories: categories,
     products: products,
     categoriesListElement: document.getElementById('categories-list'),
@@ -24,6 +106,7 @@ const store = {
         this.categoriesListElement.addEventListener('click', event => this.handleCategoryClick(event));
         this.productsListElement.addEventListener('click', event => this.handleProductClick(event));
         this.productInfoElement.addEventListener('click', event => this.handlePurchaseClick(event));
+        this.checkout.init().addSubmitListener((productId, formData) => this.handleCheckoutSubmit(productId, formData));
 
         this.renderCategoriesList();
     },
@@ -43,9 +126,13 @@ const store = {
     },
     handlePurchaseClick(event) {
         if (event.target.tagName === 'BUTTON') {
-            alert('Товар куплено!');
-            this.clearDependencyBlocks();
+            this.checkout.showForm(event.target.dataset.productId);
         }
+    },
+    handleCheckoutSubmit(productId, formData) {
+        const product = this.products.find(item => item.id === productId);
+
+        this.clearDependencyBlocks().orderList.addItem(product, formData);
     },
     renderCategoriesList() {
         categories.forEach(item => this.appendItemLi(this.categoriesListElement, item));
@@ -66,8 +153,11 @@ const store = {
 
             descriptionElement.innerText = product.description;
             button.innerText = 'Купити';
+            button.dataset.productId = productId;
 
             this.productInfoElement.innerHTML = '';
+            this.checkout.hideForm();
+
             this.productInfoElement.appendChild(descriptionElement);
             this.productInfoElement.appendChild(button);
         }
@@ -83,6 +173,7 @@ const store = {
     clearDependencyBlocks() {
         this.productsListElement.innerHTML = '';
         this.productInfoElement.innerHTML = '';
+        this.checkout.hideForm();
 
         return this;
     }

@@ -8,17 +8,78 @@
 </head>
 <body>
 
-<div class="container">
-    <h3>Категорії</h3>
-    <ul id="categories-list"></ul>
+<div class="main-container">
+    <div class="container">
+        <h3>Категорії</h3>
+        <ul id="categories-list"></ul>
+    </div>
+    <div class="container">
+        <h3>Товари</h3>
+        <ul id="products-list"></ul>
+    </div>
+    <div class="container">
+        <h3>Інформація про товар</h3>
+        <div id="product-info"></div>
+
+        <form class="d-none checkout-form" id="checkout-form">
+            <h4>Оформлення замовлення</h4>
+            <div id="validation-text" class="d-none text-danger"></div>
+
+            <div class="form-group">
+                <label for="full-name">ПІБ покупця:</label>
+                <input type="text" id="full-name" name="full-name" placeholder="Ваше ім'я та прізвище" required>
+            </div>
+
+            <div class="form-group">
+                <label for="city">Місто:</label>
+                <select id="city" name="city" required>
+                    <option value=""></option>
+                    <option value="Полтава">Полтава</option>
+                    <option value="Київ">Київ</option>
+                    <option value="Львів">Львів</option>
+                    <option value="Одеса">Одеса</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="department">Склад Нової пошти:</label>
+                <select id="department" name="department" required>
+                    <option value=""></option>
+                    <option value="№1">№1</option>
+                    <option value="№2">№2</option>
+                    <option value="№3">№3</option>
+                    <option value="№4">№4</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="payment">Спосіб оплати:</label>
+                <select id="payment" name="payment" required>
+                    <option value=""></option>
+                    <option value="cod">Післяплата</option>
+                    <option value="card">Банківська картка</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="quantity">Кількість:</label>
+                <input type="number" id="quantity" name="quantity" value="1" min="1" required>
+            </div>
+
+            <div class="form-group">
+                <label for="comment">Коментар:</label>
+                <textarea id="comment" name="comment" rows="3" placeholder="Додаткові побажання"></textarea>
+            </div>
+
+            <button type="submit">Зберегти</button>
+        </form>
+    </div>
 </div>
-<div class="container">
-    <h3>Товари</h3>
-    <ul id="products-list"></ul>
-</div>
-<div class="container">
-    <h3>Інформація про товар</h3>
-    <div id="product-info"></div>
+
+
+<div class="order-list-container">
+    <h2>Куплені товари</h2>
+    <ul id="order-list"></ul>
 </div>
 
 <script src="script.js"></script>
