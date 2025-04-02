@@ -5,36 +5,92 @@ const categories = [
 ];
 
 const products = [
-    { id: 1, categoryId: 1, name: "Смартфон", description: "Сучасний смартфон з великим дисплеєм і потужним процесором." },
-    { id: 2, categoryId: 1, name: "Ноутбук", description: "Легкий і продуктивний ноутбук для роботи та навчання." },
-    { id: 3, categoryId: 2, name: "Футболка", description: "Зручна та стильна футболка з натуральної бавовни." },
-    { id: 4, categoryId: 2, name: "Джинси", description: "Класичні джинси високої якості, які підходять для будь-якого стилю." },
-    { id: 5, categoryId: 3, name: "Роман '1984'", description: "Знаменитий роман Джорджа Орвелла про антиутопічне майбутнє." },
-    { id: 6, categoryId: 3, name: "Гаррі Поттер і філософський камінь", description: "Перша книга легендарної серії про юного чарівника Гаррі Поттера." },
-    { id: 7, categoryId: 3, name: "Основи програмування", description: "Посібник для початківців у світі програмування." }
+    { id: 1, categoryId: 1, name: "Смартфон", price: 15000, description: "Сучасний смартфон з великим дисплеєм і потужним процесором." },
+    { id: 2, categoryId: 1, name: "Ноутбук", price: 30000, description: "Легкий і продуктивний ноутбук для роботи та навчання." },
+    { id: 3, categoryId: 2, name: "Футболка", price: 500, description: "Зручна та стильна футболка з натуральної бавовни." },
+    { id: 4, categoryId: 2, name: "Джинси", price: 1200, description: "Класичні джинси високої якості, які підходять для будь-якого стилю." },
+    { id: 5, categoryId: 3, name: "Роман '1984'", price: 300, description: "Знаменитий роман Джорджа Орвелла про антиутопічне майбутнє." },
+    { id: 6, categoryId: 3, name: "Гаррі Поттер і філософський камінь", price: 350, description: "Перша книга легендарної серії про юного чарівника Гаррі Поттера." },
+    { id: 7, categoryId: 3, name: "Основи програмування", price: 400, description: "Посібник для початківців у світі програмування." }
 ];
 
 const orderList = {
-    items: [],
+    storageKey: 'orderList',
     listDisplayElement: document.getElementById('order-list'),
+    orderTemplate: document.getElementById('order-template'),
+    init: function () {
+        this.listDisplayElement.addEventListener('click', event => this.handleDeleteButtonClick(event));
+        this.listDisplayElement.addEventListener('click', event => this.handleOrderClick(event));
+
+        return this;
+    },
+    handleDeleteButtonClick(event) {
+        if (event.target.tagName === "BUTTON") {
+            this.removeItem(+event.target.dataset.id).refreshDisplay();
+        }
+    },
+    handleOrderClick: function (event) {
+        const orderHeader = event.target.closest(".order-header");
+
+        if (orderHeader) {
+            const orderItem = orderHeader.closest(".order-item");
+
+            orderItem.querySelector(".order-details").classList.toggle('expanded');
+        }
+    },
     addItem: function (product, formData) {
-        this.items.push({product, formData});
-        this.refreshDisplay();
+        const date = new Date();
+        const id = +date;
+        const formValues = Object.fromEntries(formData);
+
+        this.addToStorage({id, product, formValues, date}).refreshDisplay();
+    },
+    removeItem: function (id) {
+        let storageData = this.getStorageData();
+
+        storageData = storageData.filter(item => item.id !== id);
+
+        localStorage.setItem(this.storageKey, JSON.stringify(storageData));
+
+        return this;
+    },
+    getStorageData: function () {
+        const storageJson = localStorage.getItem(this.storageKey);
+
+        return JSON.parse(storageJson) ?? [];
+    },
+    addToStorage: function (value) {
+        const storageData = this.getStorageData();
+
+        storageData.push(value)
+
+        localStorage.setItem(this.storageKey, JSON.stringify(storageData));
+
+        return this;
     },
     refreshDisplay: function () {
         this.listDisplayElement.innerHTML = '';
 
-        this.items.forEach(item => {
-            const li = document.createElement('li');
+        this.getStorageData().forEach(item => {
+            const date = new Date(item.date);
+            const clone = this.orderTemplate.content.cloneNode(true);
+            const detailsPlaceholders = clone.querySelector('.order-details').getElementsByTagName('span');
+            let detailsCounter = 0;
 
-            const productInfo = `${item.product.name} - ${item.product.description}`;
-            const deliveryInfo = `Місто: ${item.formData.get('city')}, Склад: ${item.formData.get('department')}`;
+            clone.querySelector('.product-name').innerText = item.product.name;
+            clone.querySelector('.product-price').innerText = item.product.price * item.formValues['quantity'];
+            clone.querySelector('.order-date').innerText = date.toLocaleString();
+            clone.querySelector('.delete-btn').dataset.id = item.id;
 
-            li.innerHTML = `${productInfo}<br>${deliveryInfo}`;
+            detailsPlaceholders[detailsCounter++].innerText = item.product.description;
 
-            this.listDisplayElement.appendChild(li);
+            Object.keys(item.formValues).forEach(key => {
+                detailsPlaceholders[detailsCounter++].innerText = item.formValues[key];
+            })
+
+            this.listDisplayElement.appendChild(clone);
         });
-    }
+    },
 }
 
 const checkout = {
@@ -102,11 +158,16 @@ const store = {
     categoriesListElement: document.getElementById('categories-list'),
     productsListElement: document.getElementById('products-list'),
     productInfoElement: document.getElementById('product-info'),
+    showOrderListButton: document.getElementById('show-order-list-button'),
+    orderListContainer: document.getElementById('order-list-container'),
+    categoryContainer: document.getElementById('category-container'),
     init: function () {
         this.categoriesListElement.addEventListener('click', event => this.handleCategoryClick(event));
         this.productsListElement.addEventListener('click', event => this.handleProductClick(event));
         this.productInfoElement.addEventListener('click', event => this.handlePurchaseClick(event));
         this.checkout.init().addSubmitListener((productId, formData) => this.handleCheckoutSubmit(productId, formData));
+        this.showOrderListButton.addEventListener('click',event => this.handleShowOrderListButtonClick(event));
+        this.orderList.init().refreshDisplay();
 
         this.renderCategoriesList();
     },
@@ -150,8 +211,10 @@ const store = {
         if (product) {
             const descriptionElement = document.createElement('p');
             const button = document.createElement('button');
+            const price = document.createElement('div');
 
             descriptionElement.innerText = product.description;
+            price.innerText = `${product.price} грн.`;
             button.innerText = 'Купити';
             button.dataset.productId = productId;
 
@@ -159,6 +222,7 @@ const store = {
             this.checkout.hideForm();
 
             this.productInfoElement.appendChild(descriptionElement);
+            this.productInfoElement.appendChild(price);
             this.productInfoElement.appendChild(button);
         }
     },
@@ -176,6 +240,15 @@ const store = {
         this.checkout.hideForm();
 
         return this;
+    },
+    handleShowOrderListButtonClick(event) {
+        if (this.orderListContainer.classList.toggle('d-none')) {
+            event.target.innerText = "Мої замовлення";
+        }
+
+        if (this.categoryContainer.classList.toggle('d-none')) {
+            event.target.innerText = "Показати категорії";
+        }
     }
 }
 

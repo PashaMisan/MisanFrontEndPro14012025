@@ -10,8 +10,43 @@
 
 <div class="main-container">
     <div class="container">
-        <h3>Категорії</h3>
-        <ul id="categories-list"></ul>
+        <button id="show-order-list-button">Мої замовлення</button>
+
+        <div class="d-none" id="order-list-container">
+
+            <template id="order-template">
+                <li class="order-item">
+                    <div class="order-header">
+                        <div class="header-left">
+                            <span class="product-name"></span> - <span class="product-price"></span> грн
+                            <br>
+                            <span class="order-date"></span>
+                        </div>
+                        <div class="header-right">
+                            <button class="delete-btn">Видалити</button>
+                        </div>
+                    </div>
+                    <div class="order-details">
+                        <b>Інформація про продукт: </b><span></span><br>
+                        <b>ПІБ покупця: </b><span></span><br>
+                        <b>Місто: </b><span></span><br>
+                        <b>Склад Нової пошти: </b><span></span><br>
+                        <b>Спосіб оплати: </b><span></span><br>
+                        <b>Кількість: </b><span></span><br>
+                        <b>Коментар: </b><span></span>
+                    </div>
+                </li>
+            </template>
+
+            <h3>Куплені товари</h3>
+            <ul id="order-list"></ul>
+        </div>
+
+        <div id="category-container">
+            <h3>Категорії</h3>
+            <ul id="categories-list"></ul>
+        </div>
+
     </div>
     <div class="container">
         <h3>Товари</h3>
@@ -56,8 +91,8 @@
                 <label for="payment">Спосіб оплати:</label>
                 <select id="payment" name="payment" required>
                     <option value=""></option>
-                    <option value="cod">Післяплата</option>
-                    <option value="card">Банківська картка</option>
+                    <option value="Післяплата">Післяплата</option>
+                    <option value="Банківська картка">Банківська картка</option>
                 </select>
             </div>
 
@@ -76,13 +111,6 @@
     </div>
 </div>
 
-
-<div class="order-list-container">
-    <h2>Куплені товари</h2>
-    <ul id="order-list"></ul>
-</div>
-
 <script src="script.js"></script>
-</body>
 </body>
 </html>
