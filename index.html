@@ -8,6 +8,45 @@
 </head>
 <body>
 
+<div class="container">
+    <h1>CRUD Users</h1>
+
+    <button id="add-new">New</button>
+
+    <template id="user-template">
+        <li>
+            <span class="user-info"></span>
+            <div class="user-action">
+                <button class="view">View</button>
+                <button class="edit">Edit</button>
+                <button class="remove">Remove</button>
+            </div>
+        </li>
+    </template>
+
+    <ul id="user-list"></ul>
+
+    <div id="action-container">
+
+        <div id="user-details" class="action d-none">
+
+        </div>
+
+        <form id="user-form" class="action d-none">
+            <label for="name"></label>
+            <input type="text" id="name" name="name" placeholder="Name" required>
+
+            <label for="email"></label>
+            <input type="email" id="email" name="email" placeholder="Email" required>
+
+            <input type="hidden" id="id" name="id">
+
+            <button type="submit" id="save-user">Save</button>
+        </form>
+
+    </div>
+</div>
+
 <script src="script.js"></script>
 </body>
 </html>
