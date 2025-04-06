@@ -3,10 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Заголовок</title>
+    <title>Сутності людини та автомобіля</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+
+<h1>Сутності людини та автомобіля</h1>
+
+<form id="data-form">
+    <div class="text-red" id="validation-text"></div>
+    <fieldset>
+        <legend>Інформація про людину</legend>
+        <label for="personName">Ім'я:</label>
+        <input type="text" id="personName" name="personName" required>
+
+        <label for="personAge">Вік (від 18):</label>
+        <input type="number" id="personAge" name="personAge" min="18" required>
+    </fieldset>
+
+    <fieldset>
+        <legend>Інформація про автомобіль</legend>
+        <label for="carBrand">Марка:</label>
+        <input type="text" id="carBrand" name="carBrand" required>
+
+        <label for="carModel">Модель:</label>
+        <input type="text" id="carModel" name="carModel" required>
+
+        <label for="carYear">Рік випуску:</label>
+        <input type="number" id="carYear" name="carYear" min="1900" required>
+
+        <label for="carColor">Колір:</label>
+        <input type="text" id="carColor" name="carColor" required>
+    </fieldset>
+
+    <button type="submit">Показати інформацію</button>
+</form>
+
+<div class="result d-none" id="output"></div>
 
 <script src="script.js"></script>
 </body>
