@@ -1,0 +1,22 @@
+body {
+    font-family: sans-serif;
+    margin: 20px;
+}
+
+form {
+    margin-bottom: 20px;
+}
+
+.hidden {
+    display: none;
+}
+
+label, input {
+    display: block;
+    margin-bottom: 10px;
+}
+
+.error {
+    color: red;
+    font-size: 0.9em;
+}

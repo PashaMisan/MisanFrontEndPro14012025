@@ -3,10 +3,60 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Заголовок</title>
+    <title>Сутності багатоквартирного будинка</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+
+<form id="building-form">
+    <h2>Додати будинок</h2>
+
+    <div class="error"></div>
+
+    <label>Адреса будинку:
+        <input type="text" id="address" name="address" required/>
+    </label>
+
+    <label>Кількість квартир:
+        <input type="number" id="number" name="number" min="1" required/>
+    </label>
+
+    <button type="submit">Далі</button>
+</form>
+
+<form id="apartments-form" class="hidden">
+    <h2>Введіть кількість мешканців у кожній квартирі</h2>
+
+    <div class="error"></div>
+
+    <template id="apartment-template">
+        <label>Квартира №<span class="number"></span> – Кількість мешканців:
+            <input type="number" name="apartment" min="1" required/>
+        </label>
+    </template>
+
+    <div class="apartments-container"></div>
+
+    <button type="submit">Далі</button>
+</form>
+
+<form id="residents-form" class="hidden">
+    <h2>Введіть мешканців по кожній квартирі</h2>
+
+    <div class="error"></div>
+
+    <template id="resident-template">
+        <label>Мешканець <span class="resident-number"></span>:
+            <input type="text" name="" required/>
+        </label>
+    </template>
+
+    <div class="residents-container"></div>
+
+    <button type="submit">Показати дані про будинок</button>
+</form>
+
+<div id="building-info" class="hidden"></div>
 
 <script src="script.js"></script>
 </body>
