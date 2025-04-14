@@ -1,6 +1,7 @@
+const digits = document.querySelectorAll('.digit > img');
+
 function clock() {
     const now = new Date();
-    const digits = document.querySelectorAll('.digit > img');
 
     const h = now.getHours().toString().padStart(2, '0');
     const m = now.getMinutes().toString().padStart(2, '0');
