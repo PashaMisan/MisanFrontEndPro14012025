@@ -1,0 +1,24 @@
+{
+  "name": "front-end-pro",
+  "version": "1.0.0",
+  "description": "",
+  "main": "script.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PashaMisan/MisanFrontEndPro14012025.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/PashaMisan/MisanFrontEndPro14012025/issues"
+  },
+  "homepage": "https://github.com/PashaMisan/MisanFrontEndPro14012025#readme",
+  "dependencies": {
+    "bootstrap": "^5.3.5",
+    "moment": "^2.30.1"
+  }
+}

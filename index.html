@@ -3,11 +3,81 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Заголовок</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Працюємо з бібліотеками bootstrap, moment</title>
+    <link href="node_modules/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="styles.css" rel="stylesheet">
 </head>
-<body>
+<body class="bg-light">
 
+<div class="container py-2 ms-0">
+
+    <section class="mb-5">
+        <h2 class="text-primary mb-4">Bootstrap</h2>
+
+        <div id="alert-box" class="alert alert-success d-none" role="alert">
+            <h4 class="alert-heading">Well done!</h4>
+            <p>Aww yeah, you successfully read this important alert message. This example text is going to run a bit
+                longer
+                so that you can see how spacing within an alert works with this kind of content.</p>
+            <hr>
+            <p class="mb-0">ВWhenever you need to, be sure to use margin utilities to keep things nice and tidy.</p>
+        </div>
+
+        <div class="d-flex gap-3">
+            <button
+                    type="button"
+                    class="btn btn-primary"
+                    data-bs-toggle="modal"
+                    data-bs-target="#modal"
+                    data-bs-title="Відкрити модальне вікно">
+                Модальне вікно
+            </button>
+
+            <button id="alert-button" class="btn btn-success">
+                Алерт
+            </button>
+        </div>
+
+        <div class="modal fade" id="modal" tabindex="-1" aria-labelledby="modal-label" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header bg-primary text-white">
+                        <h5 class="modal-title" id="modal-label">Modal title</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                                aria-label="Close">
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        ...
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary">Save changes</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <h2 class="text-success mb-4">Moment</h2>
+
+        <p><strong>Моя дата народження:</strong> <span id="my-birth-date"></span></p>
+
+        <div class="mb-3">
+            <label for="user-birth-date" class="form-label">Ваша дата народження:</label>
+            <input type="date" id="user-birth-date" class="form-control w-50">
+        </div>
+        <button id="convert-button" class="btn btn-success mb-3">Перетворити дату</button>
+
+        <p><strong>Перетворена дата:</strong> <span id="converted-date"></span></p>
+    </section>
+
+</div>
+
+<script src="node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+<script src="node_modules/moment/min/moment.min.js"></script>
+<script src="node_modules/moment/locale/uk.js"></script>
 <script src="script.js"></script>
 </body>
 </html>
