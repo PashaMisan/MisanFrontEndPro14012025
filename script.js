@@ -43,10 +43,12 @@ const momentBlock = {
     convertUserDate() {
         const userInput = this.userBirthDateInput.value;
         const userDate = moment(userInput, "YYYY-MM-DD");
+        const element = this.convertedDateEl;
+        const isValid = userDate.isValid();
 
-        this.convertedDateEl.textContent = userDate.isValid()
-            ? userDate.format(this.DATE_FORMAT)
-            : "Невірний формат дати!";
+        element.innerText = isValid ? userDate.format(this.DATE_FORMAT) : "Невірний формат дати";
+        element.classList.toggle('text-success', isValid);
+        element.classList.toggle('text-danger', !isValid);
     }
 };
 
