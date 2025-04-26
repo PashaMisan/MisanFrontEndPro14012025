@@ -36,6 +36,7 @@ const momentBlock = {
 
     showMyBirthDate() {
         const myBirthDate = moment("15-05-1994", "DD-MM-YYYY");
+
         this.myBirthDateEl.textContent = myBirthDate.format(this.DATE_FORMAT);
     },
 
