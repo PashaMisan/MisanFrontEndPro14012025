@@ -1,7 +1,4 @@
-body {
-    font-family: sans-serif;
-    padding: 20px;
-}
+$text-color: green;
 
 #chat {
     border: 1px solid #ccc;
@@ -22,5 +19,5 @@ body {
 
 #chat p.bot {
     text-align: left;
-    color: green;
+    color: $text-color;
 }
