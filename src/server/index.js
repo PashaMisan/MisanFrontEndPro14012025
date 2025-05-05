@@ -7,19 +7,15 @@ app.use(express.json());
 
 const port = 3000;
 
-let users = [];
+const orders = [];
 
-app.get('/', (req, res) => {
-    res.send('Hello World!')
+app.get('/orders', (req, res) => {
+    res.json(orders);
 })
 
-app.get('/users', (req, res) => {
-    res.json(users);
-})
-
-app.post('/users', (req, res) => {
-    users.push({...req.body, id: + new Date()})
-    res.json(users);
+app.post('/order', (req, res) => {
+    orders.push({...req.body, id: + new Date()})
+    res.json(orders);
 })
 
 app.listen(port, () => {
