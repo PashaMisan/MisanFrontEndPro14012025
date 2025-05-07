@@ -10,8 +10,9 @@ export default class Drink extends Product {
         return this.VOLUME;
     }
 
-    constructor({name, price}, optionSlug = null) {
+    constructor({id, name, price}, optionSlug = null) {
+        price = Number.isInteger(price) ? price : price[optionSlug];
 
-        super({name, price: price[optionSlug]}, optionSlug);
+        super({id, name, price: price}, optionSlug);
     }
 }

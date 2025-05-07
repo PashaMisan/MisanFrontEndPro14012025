@@ -4,6 +4,20 @@ export default class Product {
         return {};
     }
 
+    static fromJson(json) {
+        const instance = new this(json, json.option);
+
+        json.basicIngredients?.forEach(ingredient => {
+            instance.addBasicIngredient(ingredient);
+        });
+
+        json.extraPaidIngredients?.forEach(ingredient => {
+            instance.addExtraPaidIngredient(ingredient);
+        });
+
+        return instance;
+    }
+
     #id = null;
     #name = null;
     #price = null;
@@ -11,8 +25,8 @@ export default class Product {
     #basicIngredients = [];
     #extraPaidIngredients = [];
 
-    constructor({name, price}, optionSlug = null) {
-        this.#id = +new Date();
+    constructor({id, name, price}, optionSlug = null) {
+        this.#id = id;
         this.#name = name;
         this.#price = price;
         this.#option = optionSlug;
@@ -47,5 +61,16 @@ export default class Product {
         return this.#extraPaidIngredients.reduce((sum, ingredient) => {
             return sum + (ingredient.price || 0);
         }, basePrice);
+    }
+
+    toJSON() {
+        return {
+            id: this.#id,
+            name: this.#name,
+            price: this.#price,
+            option: this.#option,
+            basicIngredients: this.#basicIngredients,
+            extraPaidIngredients: this.#extraPaidIngredients,
+        };
     }
 }

@@ -1,300 +1,236 @@
 import * as bootstrap from 'bootstrap'
-import { categories } from "./data/categories.js";
-import { products } from "./data/products.js";
-import { ingredients, sauces } from "./data/ingredients.js";
-import { getProductOptions, getProductClass} from "./factory/productFactory";
-
-const cart = [];
+import repository from "./components/repository";
+import orders from "./components/orders";
+import cart from "./components/cart";
+import {fromJson, getProductOptions} from "./components/productFactory";
 
 export const app = {
+    categoryContainer: document.getElementById('category-container'),
+    categoryTemplate: document.getElementById('category-template'),
+    productListContainer: document.getElementById('product-list'),
+    productTemplate: document.getElementById('product-template'),
+
     init: function () {
-        this.renderCategories();
-        this.renderProductsByCategory(1);
+        orders.init();
+        cart.init();
+
+        this.setupListeners().renderCategories().renderProductsByCategory(1);
+    },
+
+    setupListeners: function () {
+        this.categoryContainer.addEventListener('click', (event) => {
+            if (event.target.tagName === 'BUTTON') {
+                const categoryId = event.target.dataset.categoryId;
+
+                this.renderProductsByCategory(+categoryId);
+            }
+        });
+
+        this.productListContainer.addEventListener('change', (event) => {
+            const target = event.target;
+
+            if (target.type === 'radio' || target.type === 'checkbox') {
+                this.updatePrice(target.closest('form'));
+            }
+        })
+
+        this.productListContainer.addEventListener('submit', (event) => {
+            event.preventDefault();
+
+            const productObject = this.createProductFromForm(event.target);
+
+            cart.add(productObject);
+            this.triggerToast();
+        })
+
+        return this;
     },
 
     renderCategories: function () {
-        const container = document.querySelector('.category-container');
-        container.innerHTML = '';
+        const container = this.categoryContainer;
+        const template = this.categoryTemplate;
 
-        categories.forEach(category => {
-            const btn = document.createElement('button');
+        repository.getCategories().forEach(category => {
+            const clone = template.content.cloneNode(true);
+            const btn = clone.querySelector('button');
+
             btn.textContent = category.name;
-            btn.classList.add('btn', 'btn-outline-primary', 'mx-2');
-            btn.addEventListener('click', () => {
-                this.renderProductsByCategory(category.id);
-            });
-            container.appendChild(btn);
+            btn.dataset.categoryId = category.id;
+
+            container.appendChild(clone);
         });
+
+        return this;
     },
 
     renderProductsByCategory: function (categoryId) {
-        const container = document.querySelector('.product-list');
-        const template = document.getElementById('product-template');
+        const container = this.productListContainer;
+        const template = this.productTemplate;
+        const category = repository.getCategoryById(categoryId);
+
         container.innerHTML = '';
 
-        const category = categories.find(c => c.id === categoryId);
-        const categoryProducts = products.filter(p => p.categoryId === categoryId);
-
-        categoryProducts.forEach(product => {
+        repository.getProductsByCategory(categoryId).forEach(product => {
             const clone = template.content.cloneNode(true);
             const form = clone.querySelector('form');
-            form.querySelector('.card-title').textContent = product.name;
+            const title = form.querySelector('.card-title');
 
-            form.addEventListener('submit', (e) => {
-                e.preventDefault();
+            title.textContent = product.name;
+            form.dataset.productId = product.id;
 
-                const selectedOptionRadio = form.querySelector('.product-options input[type="radio"]:checked');
-                const selectedOptionSlug = selectedOptionRadio ? selectedOptionRadio.value : null;
-                const ProductClass = getProductClass(category.type);
-                const newProduct = new ProductClass(product, selectedOptionSlug);
-
-                product.ingredients.forEach(ingredientId => {
-                    const ingredient = ingredients.find(i => i.id === ingredientId);
-                    if (ingredient) {
-                        newProduct.addBasicIngredient(ingredient);
-                    }
-                });
-
-                const selectedSauceRadio = form.querySelector('.sauce-list input[type="radio"]:checked');
-                if (selectedSauceRadio) {
-                    const sauceId = parseInt(selectedSauceRadio.value);
-                    const sauce = sauces.find(s => s.id === sauceId);
-                    if (sauce) {
-                        newProduct.addBasicIngredient(sauce);  // Додаємо соус до базових інгредієнтів
-                    }
-                }
-
-                const optionalCheckboxes = form.querySelectorAll('.optional-list input[type="checkbox"]:checked');
-                optionalCheckboxes.forEach(cb => {
-                    const ingredientId = parseInt(cb.value);
-                    const ingredient = ingredients.find(i => i.id === ingredientId);
-
-                    newProduct.addExtraPaidIngredient(ingredient);
-                });
-
-                cart.push(newProduct);
-            });
-
-            this.renderIngredients(clone, product.ingredients, true);
-
-            this.renderSauces(clone, product);
-
-            this.renderOptionalIngredients(clone, category.optionalIngredientIds);
-
-            this.renderProductOptions(clone, category.type);
+            this.renderIngredients(clone, product)
+                .renderSauces(clone, product)
+                .renderOptionalIngredients(clone, category)
+                .renderProductOptions(clone, category.type)
+                .updatePrice(form);
 
             container.appendChild(clone);
         });
     },
 
-    renderIngredients: function (clone, ingredientIds, disabled = false) {
-        const ingredientList = clone.querySelector('.ingredient-list');
+    renderIngredients: function (element, product) {
+        const ingredientList = element.querySelector('.ingredient-list');
+
         ingredientList.innerHTML = '';
 
-        ingredientIds.forEach(ingredientId => {
-            const ingredient = ingredients.find(i => i.id === ingredientId);
-            const label = document.createElement('label');
-            label.classList.add('form-check');
-            const checkbox = document.createElement('input');
-            checkbox.type = 'checkbox';
-            checkbox.classList.add('form-check-input');
-            checkbox.checked = true;
-            checkbox.disabled = disabled;
-            label.appendChild(checkbox);
-            label.appendChild(document.createTextNode(ingredient.name));
-            ingredientList.appendChild(label);
-        });
+        return this.renderCheckBoxes(ingredientList, repository.getProductIngredients(product), true);
     },
 
-    renderSauces: function (clone, product) {
-        const sauceList = clone.querySelector('.sauce-list');
+    renderOptionalIngredients: function (element, category) {
+        const ingredientList = element.querySelector('.optional-list');
+
+        ingredientList.innerHTML = '';
+
+        return this.renderCheckBoxes(ingredientList, repository.getCategoryOptionalIngredients(category));
+    },
+
+    renderCheckBoxes: function (element, ingredients, required = false) {
+        ingredients.forEach(ingredient => {
+            const label = document.createElement('label');
+            const checkbox = document.createElement('input');
+
+            label.classList.add('form-check');
+
+            checkbox.value = ingredient.id;
+            checkbox.type = 'checkbox';
+            checkbox.classList.add('form-check-input');
+            checkbox.checked = required;
+            checkbox.disabled = required;
+
+            label.appendChild(checkbox);
+            label.appendChild(document.createTextNode(ingredient.name));
+
+            element.appendChild(label);
+        });
+
+        return this;
+    },
+
+    renderSauces: function (element, product) {
+        const isAllowSauce = repository.isProductAllowSouse(product.id);
+        const sauceContainer = element.querySelector('.sauce-container');
+        const sauceList = element.querySelector('.sauce-list');
+
+        sauceContainer.classList.toggle('d-none', !isAllowSauce);
         sauceList.innerHTML = '';
 
-        sauces.forEach(sauce => {
-            const label = document.createElement('label');
-            label.classList.add('form-check');
+        if (isAllowSauce) {
+            repository.getSauces().forEach((sauce, index) => {
+                const radio = document.createElement('input');
 
-            const radio = document.createElement('input');
-            radio.type = 'radio';
-            radio.name = `sauce_${product.id}`;
-            radio.value = sauce.id;
-            radio.classList.add('form-check-input');
-            radio.id = `sauce_${sauce.id}_${product.id}`;
+                radio.name = `sauce_${product.id}`;
+                radio.value = sauce.id;
 
-            label.appendChild(radio);
-            label.appendChild(document.createTextNode(sauce.name));
+                if (index === 0) {
+                    radio.checked = true;
+                }
 
-            sauceList.appendChild(label);
-        });
-    },
-
-    renderOptionalIngredients: function (clone, optionalIngredientIds) {
-        const optionalIngredients = clone.querySelector('.optional-list');
-        optionalIngredients.innerHTML = '';
-
-        optionalIngredientIds.forEach(ingredientId => {
-            const ingredient = ingredients.find(i => i.id === ingredientId);
-            const label = document.createElement('label');
-            label.classList.add('form-check');
-            const checkbox = document.createElement('input');
-            checkbox.type = 'checkbox';
-            checkbox.value = ingredient.id;
-            checkbox.classList.add('form-check-input');
-            label.appendChild(checkbox);
-            label.appendChild(document.createTextNode(ingredient.name));
-            optionalIngredients.appendChild(label);
-        });
-    },
-
-    renderProductOptions: function (clone, productType) {
-        const optionsContainer = clone.querySelector('.product-options');
-        const options = getProductOptions(productType);
-
-        Object.entries(options).forEach(([slug, { label }]) => {
-            const labelElement = document.createElement('label');
-            labelElement.classList.add('form-check');
-
-            const radio = document.createElement('input');
-            radio.type = 'radio';
-            radio.name = `productOption_${productType}`;
-            radio.value = slug;
-            radio.classList.add('form-check-input');
-
-            labelElement.appendChild(radio);
-            labelElement.appendChild(document.createTextNode(label));
-
-            optionsContainer.appendChild(labelElement);
-        });
-    }
-};
-
-document.getElementById('view-cart-btn').addEventListener('click', () => {
-    const list = document.getElementById('cart-items-list');
-    list.innerHTML = '';
-
-    if (cart.length === 0) {
-        list.innerHTML = '<li class="list-group-item text-center">Кошик порожній</li>';
-    } else {
-        cart.forEach(item => {
-            const li = document.createElement('li');
-            li.classList.add('list-group-item');
-
-            const optionLabel = item.constructor.getOptions()[item.option]?.label ?? '';
-            const fullName = optionLabel ? `${item.name} (${optionLabel})` : item.name;
-
-            li.innerHTML = `<strong>${fullName}</strong> — ${item.calculate()} грн.`;
-
-            if (item.extraPaidIngredients?.length) {
-                const ul = document.createElement('ul');
-                ul.classList.add('mt-2', 'mb-0');
-
-                item.extraPaidIngredients.forEach(ingredient => {
-                    const ingrLi = document.createElement('li');
-                    ingrLi.textContent = `${ingredient.name} (+${ingredient.price} грн.)`;
-                    ul.appendChild(ingrLi);
-                });
-
-                li.appendChild(ul);
-            }
-
-            list.appendChild(li);
-        });
-    }
-
-    const modal = new bootstrap.Modal(document.getElementById('cartModal'));
-    modal.show();
-});
-
-document.getElementById('submit-order-btn').addEventListener('click', async () => {
-    if (cart.length === 0) {
-        alert('Кошик порожній');
-        return;
-    }
-
-    const orderNumber = 'ORD-' + Date.now();
-
-    const orderData = {
-        orderNumber: orderNumber,
-        items: cart.map(item => ({
-            name: item.name,
-            option: item.option,
-            optionLabel: item.constructor.getOptions()[item.option]?.label ?? null,
-            basePrice: item.price,
-            extraPaidIngredients: item.extraPaidIngredients.map(ingredient => ({
-                name: ingredient.name,
-                price: ingredient.price
-            })),
-            total: item.calculate()
-        })),
-        totalAmount: cart.reduce((sum, item) => sum + item.calculate(), 0)
-    };
-
-    try {
-        const response = await fetch('http://localhost:3000/order', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(orderData)
-        });
-
-        if (!response.ok) throw new Error('Помилка відправки замовлення');
-
-        alert(`Замовлення №${orderNumber} успішно відправлене!`);
-        cart.length = 0;
-        document.getElementById('cart-items-list').innerHTML = '';
-        bootstrap.Modal.getInstance(document.getElementById('cartModal')).hide();
-    } catch (error) {
-        console.error(error);
-        alert('Не вдалося оформити замовлення. Спробуйте пізніше.');
-    }
-});
-
-document.getElementById('view-orders-btn').addEventListener('click', async () => {
-    const ordersList = document.getElementById('orders-list');
-    ordersList.innerHTML = '<p>Завантаження...</p>';
-
-    // Показати модалку одразу
-    const modal = new bootstrap.Modal(document.getElementById('ordersModal'));
-    modal.show();
-
-    try {
-        const response = await fetch('http://localhost:3000/orders');
-        const orders = await response.json();
-
-        if (!Array.isArray(orders) || orders.length === 0) {
-            ordersList.innerHTML = '<p class="text-center">Замовлень поки що немає.</p>';
-            return;
+                this.prependRadioToContainer(radio, sauce.name, sauceContainer);
+            });
         }
 
-        ordersList.innerHTML = '';
+        return this;
+    },
 
-        orders.forEach(order => {
-            const div = document.createElement('div');
-            div.classList.add('mb-4', 'border', 'rounded', 'p-3');
+    renderProductOptions: function (element, productType) {
+        const optionsContainer = element.querySelector('.product-options');
+        const options = getProductOptions(productType);
 
-            const itemsHtml = order.items.map(item => {
-                const extras = item.extraPaidIngredients.map(ing => `${ing.name} (+${ing.price} грн)`).join(', ');
-                return `
-                    <li class="mb-1">
-                        <strong>${item.name}</strong> ${item.optionLabel ? `(${item.optionLabel})` : ''} — 
-                        ${item.total} грн
-                        ${extras ? `<br><small class="text-muted">Додатково: ${extras}</small>` : ''}
-                    </li>
-                `;
-            }).join('');
+        Object.entries(options).forEach(([slug, {label}], index) => {
+            const radio = document.createElement('input');
 
-            div.innerHTML = `
-                <h6 class="mb-2">№ ${order.orderNumber}</h6>
-                <ul>${itemsHtml}</ul>
-                <p class="fw-bold text-end">Разом: ${order.totalAmount} грн</p>
-            `;
+            radio.name = `productOption_${productType}`;
+            radio.value = slug;
 
-            ordersList.appendChild(div);
+            if (index === 0) {
+                radio.checked = true;
+            }
+
+            this.prependRadioToContainer(radio, label, optionsContainer);
         });
 
-    } catch (error) {
-        console.error('Помилка при завантаженні замовлень:', error);
-        ordersList.innerHTML = '<p class="text-danger">Не вдалося завантажити замовлення.</p>';
+        return this;
+    },
+
+    prependRadioToContainer: function (radio, label, container) {
+        const labelElement = document.createElement('label');
+
+        labelElement.classList.add('form-check');
+
+        radio.type = 'radio';
+        radio.classList.add('form-check-input');
+        radio.required = true;
+
+        labelElement.appendChild(radio);
+        labelElement.appendChild(document.createTextNode(label));
+
+        container.appendChild(labelElement);
+    },
+
+    createProduct: function (form, product) {
+        const optionalCheckboxes = form.querySelectorAll('.optional-list input[type="checkbox"]:checked');
+        const selectedSauceRadio = form.querySelector('.sauce-list input[type="radio"]:checked');
+
+        const baseIngredients = product.ingredients.map(repository.getIngredientById);
+
+        const json = {
+            id: product.id,
+            name: product.name,
+            price: product.price,
+            option: form.querySelector('.product-options input[type="radio"]:checked').value,
+            basicIngredients: [],
+            extraPaidIngredients: []
+        };
+
+        json.basicIngredients.push(...baseIngredients);
+
+        if (selectedSauceRadio) {
+            json.basicIngredients.push(repository.getSauceById(+selectedSauceRadio.value));
+        }
+
+        optionalCheckboxes.forEach(element => {
+            json.extraPaidIngredients.push(repository.getIngredientById(+element.value));
+        });
+
+        return fromJson(json);
+    },
+
+    createProductFromForm: function (formElement) {
+        const product = repository.getProductById(+formElement.dataset.productId);
+
+        return this.createProduct(formElement, product);
+    },
+
+    updatePrice: function (formElement) {
+        const productObject = this.createProductFromForm(formElement);
+        const priceElement = formElement.querySelector('.price');
+
+        priceElement.textContent = `${productObject.calculate()} грн`;
+    },
+
+    triggerToast: function () {
+        const toastMessage = new bootstrap.Toast(document.getElementById('toastMessage'));
+
+        toastMessage.show();
     }
-});
+};

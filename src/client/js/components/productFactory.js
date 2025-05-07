@@ -1,3 +1,4 @@
+import repository from "./repository";
 import Burger from "../class/Burger";
 import Shawarma from "../class/Shawarma";
 import Drink from "../class/Drink";
@@ -9,7 +10,13 @@ export function getProductOptions(type) {
     return ProductClass.getOptions();
 }
 
-export function getProductClass(type) {
+export function fromJson(json) {
+    const type = repository.getProductCategory(json.id).type;
+
+    return getProductClass(type).fromJson(json);
+}
+
+function getProductClass(type) {
     const loweredType = type.toLowerCase();
 
     switch (loweredType) {

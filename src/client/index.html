@@ -3,61 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Заголовок</title>
+    <title>Онлайн-кафе</title>
 </head>
 <body>
+
 <div class="container py-5">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1 class="fw-bold mb-0">Меню</h1>
         <div>
-            <button type="button" class="btn btn-outline-secondary me-2" id="view-orders-btn">📦 Замовлення</button>
+            <button type="button" class="btn btn-outline-secondary me-2" id="view-orders-btn">Замовлення</button>
             <button type="button" class="btn btn-primary" id="view-cart-btn">
-                🛒 Кошик <span class="badge bg-light text-dark" id="cart-count">0</span>
+                Кошик <span class="badge bg-light text-dark" id="cart-count">0</span>
             </button>
         </div>
     </div>
 
-    <div class="d-flex justify-content-center mb-4 category-container">
-    </div>
+    <div id="category-container" class="d-flex justify-content-center mb-4"></div>
 
-    <div class="row product-list"></div>
+    <div id="product-list" class="row"></div>
 </div>
 
-<template id="product-template">
-    <div class="col-12 col-md-6 col-lg-4">
-        <div class="card shadow-sm mb-4">
-            <form class="card-body">
-                <h5 class="card-title"></h5>
-
-                <div class="row">
-                    <div class="col-12 col-md-6">
-                        <h6>Інгредієнти</h6>
-                        <div class="ingredient-list"></div>
-                    </div>
-                    <div class="col-12 col-md-6">
-                        <h6>Соуси</h6>
-                        <div class="sauce-list"></div>
-                    </div>
-                </div>
-
-                <div class="mt-3 optional-ingredients">
-                    <h6>Додаткові інгредієнти</h6>
-                    <div class="optional-list"></div>
-                </div>
-
-                <div class="mt-3 product-options">
-                    <h6>Опції продукту</h6>
-                </div>
-
-                <div class="mt-3 text-end">
-                    <button type="submit" class="btn btn-success add-to-cart-btn">Додати у кошик</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</template>
-
-<div class="modal fade" id="cartModal" tabindex="-1" aria-labelledby="cartModalLabel" aria-hidden="true">
+<div class="modal fade" id="cartModal" tabindex="-1" aria-labelledby="cartModalLabel">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
@@ -76,7 +42,7 @@
     </div>
 </div>
 
-<div class="modal fade" id="ordersModal" tabindex="-1" aria-labelledby="ordersModalLabel" aria-hidden="true">
+<div class="modal fade" id="ordersModal" tabindex="-1" aria-labelledby="ordersModalLabel">
     <div class="modal-dialog modal-xl modal-dialog-scrollable">
         <div class="modal-content">
             <div class="modal-header">
@@ -94,5 +60,77 @@
     </div>
 </div>
 
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+    <div id="toastMessage" class="toast" role="alert" aria-live="assertive">
+        <div class="toast-header">
+            <strong class="me-auto text-success">Товар додано в кошик!</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Закрити"></button>
+        </div>
+        <div class="toast-body">
+            Товар успішно додано в кошик. Продовжуйте покупки або перейдіть до кошика.
+        </div>
+    </div>
+</div>
+
+<template id="category-template">
+    <button class="btn btn-outline-primary mx-2" data-category-id=""></button>
+</template>
+
+<template id="product-template">
+    <div class="col-12 col-md-6 col-lg-4">
+        <div class="card shadow-lg border-light mb-4">
+            <form class="card-body p-4">
+                <h5 class="card-title text-center mb-3"></h5>
+
+                <div class="product-price mt-2 text-center">
+                    <strong class="text-primary">Ціна:</strong> <span class="price text-success">0 грн</span>
+                </div>
+
+                <div class="row mt-4">
+                    <div class="col-12 col-md-6">
+                        <h6 class="text-secondary">Інгредієнти</h6>
+                        <div class="ingredient-list"></div>
+                    </div>
+
+                    <div class="col-12 col-md-6 sauce-container">
+                        <h6 class="text-secondary">Соуси</h6>
+                        <div class="sauce-list"></div>
+                    </div>
+                </div>
+
+                <div class="mt-3 optional-ingredients">
+                    <h6 class="text-secondary">Додатки</h6>
+                    <div class="optional-list"></div>
+                </div>
+
+                <div class="mt-3 product-options">
+                    <h6 class="text-secondary">Опції продукту</h6>
+                </div>
+
+                <div class="mt-4 text-center">
+                    <button type="submit" class="btn btn-success btn-lg w-100 add-to-cart-btn">Додати у кошик</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</template>
+
+<template id="order-template">
+    <div class="mb-4 border rounded p-3">
+        <h6 class="mb-2 order-number"></h6>
+        <ul class="items-list"></ul>
+        <p class="fw-bold text-end total-amount"></p>
+    </div>
+</template>
+
+<template id="order-item-template">
+    <li class="mb-1">
+        <strong class="item-name"></strong>
+        <span class="item-option"></span> —
+        <span class="item-total"></span>
+        <br>
+        <small class="text-muted item-extras d-none"></small>
+    </li>
+</template>
 </body>
 </html>
