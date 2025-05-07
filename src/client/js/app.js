@@ -1,7 +1,7 @@
-import * as bootstrap from 'bootstrap'
 import repository from "./components/repository";
 import orders from "./components/orders";
 import cart from "./components/cart";
+import toast from "./components/toast";
 import {fromJson, getProductOptions} from "./components/productFactory";
 
 export const app = {
@@ -40,7 +40,10 @@ export const app = {
             const productObject = this.createProductFromForm(event.target);
 
             cart.add(productObject);
-            this.triggerToast();
+            toast.trigger(
+                'Товар додано в кошик!',
+                'Товар успішно додано в кошик. Продовжуйте покупки або перейдіть до кошика.'
+            );
         })
 
         return this;
@@ -145,7 +148,7 @@ export const app = {
                     radio.checked = true;
                 }
 
-                this.prependRadioToContainer(radio, sauce.name, sauceContainer);
+                this.prependRadioToContainer(radio, sauce.name, sauceList);
             });
         }
 
@@ -226,11 +229,5 @@ export const app = {
         const priceElement = formElement.querySelector('.price');
 
         priceElement.textContent = `${productObject.calculate()} грн`;
-    },
-
-    triggerToast: function () {
-        const toastMessage = new bootstrap.Toast(document.getElementById('toastMessage'));
-
-        toastMessage.show();
     }
 };

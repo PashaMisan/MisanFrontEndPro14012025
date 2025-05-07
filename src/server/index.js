@@ -14,7 +14,9 @@ app.get('/orders', (req, res) => {
 })
 
 app.post('/order', (req, res) => {
-    orders.push({...req.body, id: + new Date()})
+    const id = +new Date();
+
+    orders.push({...req.body, id: id, orderNumber: 'order-' + id})
     res.json(orders);
 })
 

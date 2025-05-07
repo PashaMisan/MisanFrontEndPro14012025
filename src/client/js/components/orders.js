@@ -28,39 +28,45 @@ const orders = {
             this.ordersList.innerHTML = '';
 
             orders.forEach(order => {
-                const clone = this.template.content.cloneNode(true);
+                const orderItem = this.renderOrderItem(order);
 
-                clone.querySelector('.order-number').textContent = `№ ${order.orderNumber}`;
-                clone.querySelector('.total-amount').textContent = `Разом: ${order.totalAmount} грн`;
-
-                const itemsList = clone.querySelector('.items-list');
-                order.items.forEach(item => {
-                    const liClone = this.itemTemplate.content.cloneNode(true);
-
-                    liClone.querySelector('.item-name').textContent = item.name;
-
-                    const option = liClone.querySelector('.item-option');
-                    option.textContent = item.optionLabel ? `(${item.optionLabel.label})` : '';
-
-                    liClone.querySelector('.item-total').textContent = `${item.total} грн`;
-
-                    const extrasElement = liClone.querySelector('.item-extras');
-                    if (item.extraPaidIngredients.length > 0) {
-                        extrasElement.textContent = `Додатково: ${item.extraPaidIngredients
-                            .map(ing => `${ing.name} (+${ing.price} грн)`)
-                            .join(', ')}`;
-                        extrasElement.classList.remove('d-none');
-                    }
-
-                    itemsList.appendChild(liClone);
-                });
-
-                this.ordersList.appendChild(clone);
+                this.ordersList.appendChild(orderItem);
             });
 
         } catch (error) {
             this.ordersList.innerHTML = '<p class="text-danger">Не вдалося завантажити замовлення.</p>';
         }
+    },
+
+    renderOrderItem: function (order) {
+        const template = this.template.content.cloneNode(true);
+        const itemsList = template.querySelector('.items-list');
+
+        template.querySelector('.order-number').textContent = `№ ${order.orderNumber}`;
+        template.querySelector('.total-amount').textContent = `Разом: ${order.totalAmount} грн`;
+
+        order.items.forEach(item => {
+            const itemTemplate = this.itemTemplate.content.cloneNode(true);
+            const option = itemTemplate.querySelector('.item-option');
+            const extrasElement = itemTemplate.querySelector('.item-extras');
+
+
+            itemTemplate.querySelector('.item-name').textContent = item.name;
+            itemTemplate.querySelector('.item-total').textContent = `${item.total} грн`;
+
+            option.textContent = item.optionLabel ? `(${item.optionLabel.label})` : '';
+
+            if (item.extraPaidIngredients.length > 0) {
+                extrasElement.textContent = `Додатки: ${item.extraPaidIngredients
+                    .map(ing => `${ing.name} (+${ing.price} грн)`)
+                    .join(', ')}`;
+                extrasElement.classList.remove('d-none');
+            }
+
+            itemsList.appendChild(itemTemplate);
+        });
+
+        return template;
     }
 };
 

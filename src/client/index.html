@@ -61,14 +61,12 @@
 </div>
 
 <div class="toast-container position-fixed bottom-0 end-0 p-3">
-    <div id="toastMessage" class="toast" role="alert" aria-live="assertive">
+    <div id="toast" class="toast" role="alert" aria-live="assertive">
         <div class="toast-header">
-            <strong class="me-auto text-success">Товар додано в кошик!</strong>
+            <strong class="me-auto text-success label"></strong>
             <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Закрити"></button>
         </div>
-        <div class="toast-body">
-            Товар успішно додано в кошик. Продовжуйте покупки або перейдіть до кошика.
-        </div>
+        <div class="toast-body"></div>
     </div>
 </div>
 
@@ -93,8 +91,9 @@
                     </div>
 
                     <div class="col-12 col-md-6 sauce-container">
-                        <h6 class="text-secondary">Соуси</h6>
+                        <h6 class="text-secondary">Соус</h6>
                         <div class="sauce-list"></div>
+                        <small class="text-success">*входить у вартість</small>
                     </div>
                 </div>
 
@@ -104,7 +103,7 @@
                 </div>
 
                 <div class="mt-3 product-options">
-                    <h6 class="text-secondary">Опції продукту</h6>
+                    <h6 class="text-secondary">Опції</h6>
                 </div>
 
                 <div class="mt-4 text-center">
@@ -113,6 +112,15 @@
             </form>
         </div>
     </div>
+</template>
+
+<template id="cart-item-template">
+    <li class="list-group-item position-relative py-3 px-4">
+        <strong class="item-name"></strong>
+        <span class="item-price"></span>
+        <ul class="extra-ingredients mt-2 mb-0"></ul>
+        <button class="btn btn-danger btn-sm position-absolute top-0 end-0 m-2">X</button>
+    </li>
 </template>
 
 <template id="order-template">

@@ -1,6 +1,6 @@
 import {CATEGORIES} from "../data/categories.js";
-import {products} from "../data/products.js";
-import {ingredients, sauces} from "../data/ingredients";
+import {PRODUCTS} from "../data/products";
+import {INGREDIENTS, SAUCES} from "../data/ingredients";
 
 const repository = {
     isProductAllowSouse(productId) {
@@ -12,7 +12,7 @@ const repository = {
     },
 
     getSauces() {
-        return sauces;
+        return SAUCES;
     },
 
     getCategoryById(categoryId) {
@@ -20,11 +20,11 @@ const repository = {
     },
 
     getIngredientById(ingredientId) {
-        return ingredients.find(i => i.id === ingredientId) || null;
+        return INGREDIENTS.find(i => i.id === ingredientId) || null;
     },
 
     getSauceById(sauceId) {
-        return sauces.find(i => i.id === sauceId) || null;
+        return SAUCES.find(i => i.id === sauceId) || null;
     },
 
     getProductCategory(productId) {
@@ -34,11 +34,11 @@ const repository = {
     },
 
     getProductById(productId) {
-        return products.find(p => p.id === productId) || null;
+        return PRODUCTS.find(p => p.id === productId) || null;
     },
 
     getProductsByCategory(categoryId) {
-        return products.filter(p => p.categoryId === categoryId);
+        return PRODUCTS.filter(p => p.categoryId === categoryId);
     },
 
     getProductIngredients(product) {
