@@ -1,23 +1,29 @@
 import {useState} from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
+import Logout from "./components/Logout";
+import Form from "./components/Form";
+import List from "./components/List";
 import credentialManager from "./utils/credentialManager.js";
 import Login from "./components/Login";
 import './App.css'
 
 import React, {Component} from "react";
-import Logout from "./components/Logout/index.jsx";
+import {v4 as uuidv4} from 'uuid';
 
 class App extends Component {
 
     constructor(props) {
         super(props);
         this.state = {
-            token: ''
+            token: '',
+            todos: []
         };
 
         this.updateToken = this.updateToken.bind(this);
         this.removeToken = this.removeToken.bind(this);
+        this.handleFormSubmit = this.handleFormSubmit.bind(this);
+        this.handleDelete = this.handleDelete.bind(this);
     }
 
     updateToken(token) {
@@ -38,8 +44,19 @@ class App extends Component {
         }
     }
 
+    handleFormSubmit(title) {
+        const todos = [...this.state.todos, {id: uuidv4(), title, done: false}]
+
+        this.setState({todos: todos});
+    }
+
+    handleDelete(id) {
+        const todos = this.state.todos.filter(todo => todo.id !== id);
+
+        this.setState({todos: todos});
+    }
+
     render() {
-        console.log('render')
         if (this.state.token) {
             return (
                 <div className="container mt-5">
@@ -49,8 +66,8 @@ class App extends Component {
 
                     <div className="row justify-content-center">
                         <div className="col-md-6 text-center">
-                            <h2 className="mb-4">Успішно!</h2>
-                            <p className="lead">Ви успішно авторизувались на сайті.</p>
+                            <Form onSubmit={this.handleFormSubmit}/>
+                            <List todos={this.state.todos} onDelete={this.handleDelete}/>
                         </div>
                     </div>
                 </div>
