@@ -6,24 +6,19 @@ class Button extends Component {
 
         this.state = {
             title: this.props.title,
-            isDisabled: false,
         };
 
-        this.handleDeleteClick = this.handleDeleteClick.bind(this);
+        this.handleClick = this.handleClick.bind(this);
     }
 
 
-    handleDeleteClick() {
-        debugger
+    handleClick() {
         this.props.onClick(this.props.id);
     }
 
     render() {
         return (
-            <button
-                className={this.props.className}
-                onClick={this.handleDeleteClick}
-            >
+            <button className={this.props.className} onClick={this.handleClick}>
                 {this.props.title}
             </button>
         );

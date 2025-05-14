@@ -1,6 +1,3 @@
-import {useState} from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import Logout from "./components/Logout";
 import Form from "./components/Form";
 import List from "./components/List";
@@ -10,6 +7,7 @@ import './App.css'
 
 import React, {Component} from "react";
 import {v4 as uuidv4} from 'uuid';
+import store from "store2";
 
 class App extends Component {
 
@@ -17,13 +15,14 @@ class App extends Component {
         super(props);
         this.state = {
             token: '',
-            todos: []
+            todos: store.get('todos', [])
         };
 
         this.updateToken = this.updateToken.bind(this);
         this.removeToken = this.removeToken.bind(this);
         this.handleFormSubmit = this.handleFormSubmit.bind(this);
         this.handleDelete = this.handleDelete.bind(this);
+        this.handleUpdate = this.handleUpdate.bind(this);
     }
 
     updateToken(token) {
@@ -45,14 +44,26 @@ class App extends Component {
     }
 
     handleFormSubmit(title) {
-        const todos = [...this.state.todos, {id: uuidv4(), title, done: false}]
+        const newTodo = {id: uuidv4(), title, priority: 'low', status: 'todo'};
+        const todos = [...this.state.todos, newTodo]
 
+        store.set('todos', todos);
         this.setState({todos: todos});
     }
 
     handleDelete(id) {
         const todos = this.state.todos.filter(todo => todo.id !== id);
 
+        store.set('todos', todos);
+        this.setState({todos: todos});
+    }
+
+    handleUpdate(id, name, value) {
+        const todos = this.state.todos;
+        const todo = todos.find(item => item.id === id);
+
+        todo[name] = value;
+        store.set('todos', todos);
         this.setState({todos: todos});
     }
 
@@ -67,7 +78,7 @@ class App extends Component {
                     <div className="row justify-content-center">
                         <div className="col-md-6 text-center">
                             <Form onSubmit={this.handleFormSubmit}/>
-                            <List todos={this.state.todos} onDelete={this.handleDelete}/>
+                            <List todos={this.state.todos} onDelete={this.handleDelete} onUpdate={this.handleUpdate}/>
                         </div>
                     </div>
                 </div>
