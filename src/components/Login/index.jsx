@@ -5,22 +5,36 @@ class Login extends Component {
 
     constructor(props) {
         super(props);
+
         this.state = {
-            error: ''
+            error: '',
+            username: '',
+            password: ''
         };
     }
 
     handleSubmit = (event) => {
         event.preventDefault();
 
-        const formData = new FormData(event.target);
-        const token = credentialManager.generateToken(formData.get('username'), formData.get('password'));
+        const token = credentialManager.generateToken(this.state.username, this.state.password);
 
         if (token === credentialManager.getValidToken()) {
             this.props.onSuccessLogin(token);
         } else {
             this.setState({error: 'Невірний логін або пароль!'});
         }
+    }
+
+    handleUsernameChange = (event) => {
+        this.setState({
+            username: event.target.value
+        })
+    }
+
+    handlePasswordChange = (event) => {
+        this.setState({
+            password: event.target.value
+        })
     }
 
     render() {
@@ -40,6 +54,8 @@ class Login extends Component {
                                     className="form-control"
                                     id="username"
                                     name="username"
+                                    value={this.state.username}
+                                    onChange={this.handleUsernameChange}
                                     required
                                 />
                             </div>
@@ -50,6 +66,8 @@ class Login extends Component {
                                     className="form-control"
                                     id="password"
                                     name="password"
+                                    value={this.state.password}
+                                    onChange={this.handlePasswordChange}
                                     required
                                 />
                             </div>
