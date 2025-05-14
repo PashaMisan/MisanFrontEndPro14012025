@@ -1,6 +1,7 @@
 import Button from "./Button";
 import {Component} from "react";
 import Form from "./Form";
+import Input from "./Input/index.jsx";
 
 class Item extends Component {
     constructor(props) {
@@ -19,15 +20,16 @@ class Item extends Component {
         return (
             <li className="mb-3 p-3 border rounded shadow-sm bg-white">
                 <div className="d-flex justify-content-between align-items-center">
-                    <span className="me-3">{this.props.todo.title}</span>
-
+                    <div className="me-3">
+                        <Input text={this.props.todo.title} onUpdate={this.props.onUpdate} id={id}/>
+                    </div>
                     <div className="d-flex align-items-center">
                         <Form todo={this.props.todo} onUpdate={this.handleUpdate} id={id}/>
                         <Button
                             className="btn btn-danger ms-2"
-                            title="Видалити"
                             onClick={this.props.onDelete}
                             id={id}
+                            icon={<i className="bi bi-trash"></i>}
                         />
                     </div>
                 </div>

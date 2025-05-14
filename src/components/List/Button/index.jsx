@@ -4,10 +4,6 @@ class Button extends Component {
     constructor(props) {
         super(props);
 
-        this.state = {
-            title: this.props.title,
-        };
-
         this.handleClick = this.handleClick.bind(this);
     }
 
@@ -19,7 +15,7 @@ class Button extends Component {
     render() {
         return (
             <button className={this.props.className} onClick={this.handleClick}>
-                {this.props.title}
+                {this.props.icon}
             </button>
         );
     }
