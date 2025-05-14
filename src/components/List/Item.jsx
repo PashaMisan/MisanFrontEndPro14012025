@@ -1,7 +1,7 @@
 import Button from "./Button";
 import {Component} from "react";
 import Form from "./Form";
-import Input from "./Input/index.jsx";
+import Input from "./Input";
 
 class Item extends Component {
     constructor(props) {
