@@ -1,35 +1,57 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React, {Component} from 'react';
+import SMILES from "./data/smiles.js";
+import SmileCard from "./components/SmileCard";
 
-function App() {
-  const [count, setCount] = useState(0)
+class App extends Component {
+    constructor(props) {
+        super(props);
 
-  return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+        this.state = {
+            smiles: SMILES,
+            winner: null
+        };
+    }
+
+    handleVote = (id) => {
+        const smiles = this.state.smiles.map(smile => {
+            if (smile.id === id) smile.votes++;
+
+            return smile;
+        });
+
+        this.setState({smiles});
+    };
+
+    showResults = () => {
+        const maxVotes = Math.max(...this.state.smiles.map(smile => smile.votes));
+        const winner = this.state.smiles.find(smile => smile.votes === maxVotes);
+
+        this.setState({winner});
+    };
+
+    render() {
+        return (
+            <div className="container text-center mt-5">
+                <h2 className="mb-4">Голосування за кращий смайл</h2>
+
+                <div className="d-flex justify-content-center gap-3 flex-wrap mb-4">
+                    {this.state.smiles.map(smile => (
+                        <SmileCard key={smile.id} smile={smile} onVote={this.handleVote}/>
+                    ))}
+                </div>
+
+                <button className="btn btn-warning" onClick={this.showResults}>
+                    Show Results
+                </button>
+
+                {this.state.winner && (
+                    <div className="alert alert-success mt-4" role="alert">
+                        Переможець: <strong>{this.state.winner.symbol} {this.state.winner.name}</strong> — {this.state.winner.votes} голосів!
+                    </div>
+                )}
+            </div>
+        );
+    }
 }
 
-export default App
+export default App;
