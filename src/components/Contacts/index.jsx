@@ -11,7 +11,6 @@ import {
 import ContactRow from "./ContactRow/index.jsx";
 
 function Contacts({contacts, removeContact}) {
-
     return (
         <TableContainer component={Paper}>
             <Typography variant="h6" align="center" sx={{mt: 2}}>
