@@ -1,35 +1,93 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import {useEffect, useState} from "react";
+import Contacts from "./components/Contacts";
+import Form from "./components/Form";
+import {Container, Tabs, Tab, Box, Paper} from "@mui/material";
+import store from "store2";
+import {v4 as uuidv4} from 'uuid';
+
+const STORAGE_KEY = "contacts";
 
 function App() {
-  const [count, setCount] = useState(0)
+    const [page, setPage] = useState("contacts");
+    const [contacts, setContacts] = useState(() => {
+        return store.get(STORAGE_KEY) || [];
+    });
 
-  return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    useEffect(() => {
+        if (!store.has(STORAGE_KEY)) {
+            fetch("https://jsonplaceholder.typicode.com/users")
+                .then(res => res.json())
+                .then(data => {
+                    const parsed = data.map(user => {
+                        const [firstName, ...lastNameParts] = user.name.split(" ");
+                        return {
+                            id: user.id,
+                            firstName,
+                            lastName: lastNameParts.join(" "),
+                            phone: user.phone
+                        };
+                    });
+
+                    setContacts(parsed);
+                    store.set(STORAGE_KEY, parsed);
+                });
+        }
+    }, []);
+
+    const addContact = (contactData) => {
+        const updatedContacts = [
+            ...contacts,
+            {id: uuidv4(), ...contactData}
+        ];
+
+        setContacts(updatedContacts);
+        store.set(STORAGE_KEY, updatedContacts);
+        setPage("contacts");
+    };
+
+    const removeContact = (id) => {
+        const updatedContacts = contacts.filter(contact => contact.id !== id);
+
+        setContacts(updatedContacts);
+        store.set(STORAGE_KEY, updatedContacts);
+    };
+
+    const cancelAdd = () => {
+        setPage("contacts");
+    };
+
+    return (
+        <>
+            <Paper
+                elevation={3}
+                sx={{
+                    position: "sticky",
+                    top: 0,
+                    zIndex: 1000,
+                    backgroundColor: "white"
+                }}
+            >
+                <Container maxWidth="sm">
+                    <Box display="flex" justifyContent="center">
+                        <Tabs
+                            value={page}
+                            textColor="primary"
+                            indicatorColor="primary"
+                            centered
+                        >
+                            <Tab label="Контакти" value="contacts" onClick={() => setPage('contacts')}/>
+                            <Tab label="Додати контакт" value="form" onClick={() => setPage('form')}/>
+                        </Tabs>
+                    </Box>
+                </Container>
+            </Paper>
+
+            <Container maxWidth="sm" sx={{mt: 4}}>
+                {page === "contacts" && <Contacts contacts={contacts} removeContact={removeContact}/>}
+                {page === "form" && <Form onSubmit={addContact} onCancel={cancelAdd}/>}
+            </Container>
+        </>
+    );
 }
 
-export default App
+export default App;
